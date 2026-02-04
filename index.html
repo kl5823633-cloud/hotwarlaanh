@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Web Nghe Nhạc Nền</title>
+
+<style>
+*{box-sizing:border-box;font-family:Arial}
+body{
+    margin:0;
+    background:linear-gradient(135deg,#1e90ff,#6a5acd);
+    color:#fff;
+    text-align:center;
+}
+.hidden{display:none}
+.box{
+    background:rgba(0,0,0,.3);
+    width:90%;
+    max-width:700px;
+    margin:30px auto;
+    padding:20px;
+    border-radius:12px;
+}
+input,button{
+    padding:10px;
+    border:none;
+    border-radius:8px;
+    font-size:16px;
+}
+input{width:60%}
+button{
+    background:#00ffd5;
+    cursor:pointer;
+    margin-left:5px;
+}
+.menu button{
+    width:100%;
+    margin:10px 0;
+}
+iframe{
+    width:100%;
+    height:200px;
+    border-radius:12px;
+    border:none;
+}
+footer{
+    opacity:.7;
+    margin:20px 0;
+}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div class="box" id="loginBox">
+    <h2>🔐 Nhập KEY truy cập</h2>
+    <input id="keyInput" placeholder="Nhập key...">
+    <button onclick="login()">Vào</button>
+    <p id="loginMsg"></p>
+</div>
+
+<!-- APP -->
+<div class="box hidden" id="appBox">
+    <h2>🎵 WEB NGHE NHẠC</h2>
+    <p id="roleText"></p>
+
+    <div class="menu">
+        <button onclick="showYT()">YouTube</button>
+        <button onclick="showSC()">SoundCloud</button>
+        <button id="logoutBtn" onclick="logout()">Logout</button>
+    </div>
+
+    <!-- YOUTUBE -->
+    <div id="ytBox" class="hidden">
+        <input id="ytInput" placeholder="Dán link YouTube">
+        <button onclick="playYT()">Phát</button>
+        <iframe id="ytPlayer"></iframe>
+    </div>
+
+    <!-- SOUNDCLOUD -->
+    <div id="scBox" class="hidden">
+        <input id="scInput" placeholder="Dán link SoundCloud">
+        <button onclick="playSC()">Phát</button>
+        <iframe id="scPlayer"></iframe>
+    </div>
+</div>
+
+<footer>© 2026 | Anh là Khang</footer>
+
+<script>
+const ADMIN_KEY = "ADMINKEY123";
+
+function login(){
+    const key = keyInput.value.trim();
+    if(!key){
+        loginMsg.innerText="❌ Chưa nhập key";
+        return;
+    }
+    const role = (key===ADMIN_KEY) ? "admin" : "user";
+    localStorage.setItem("role",role);
+    init();
+}
+
+function init(){
+    const role = localStorage.getItem("role");
+    if(!role) return;
+
+    loginBox.classList.add("hidden");
+    appBox.classList.remove("hidden");
+    roleText.innerText = "👤 Quyền: " + role.toUpperCase();
+
+    if(role==="user"){
+        logoutBtn.style.display="none";
+    }
+}
+
+function logout(){
+    localStorage.clear();
+    location.reload();
+}
+
+function showYT(){
+    ytBox.classList.remove("hidden");
+    scBox.classList.add("hidden");
+}
+
+function showSC(){
+    scBox.classList.remove("hidden");
+    ytBox.classList.add("hidden");
+}
+
+// YOUTUBE (nghe nền)
+function playYT(){
+    let url = ytInput.value;
+    let id = "";
+    if(url.includes("watch?v=")){
+        id = url.split("watch?v=")[1].split("&")[0];
+    }else{
+        alert("Link YouTube không hợp lệ");
+        return;
+    }
+    ytPlayer.src =
+        "https://www.youtube.com/embed/"+id+
+        "?autoplay=1&controls=1";
+}
+
+// SOUNDCLOUD
+function playSC(){
+    const url = scInput.value;
+    scPlayer.src =
+        "https://w.soundcloud.com/player/?url="+
+        encodeURIComponent(url)+
+        "&auto_play=true";
+}
+
+init();
+</script>
+
+</body>
+</html>
+
